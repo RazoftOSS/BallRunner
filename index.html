@@ -311,6 +311,15 @@
 				delete keystate[e.keyCode];
 			});
 
+			// Listen for buttons being touched
+			document.addEventListener("touchstart", function(e){
+				keystate[e.target.id] = true;
+			});
+
+			document.addEventListener("touchend", function(e){
+				delete keystate[e.target.id];
+			});
+
 			// Initialise the game
 			init();
 
