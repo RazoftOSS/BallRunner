@@ -2,7 +2,7 @@
 	<head>
 		<title>BallRunner</title>
 		<style>
-		body {
+	body {
 			margin: 0;
 			background-color: black;
 			color: white;
@@ -14,6 +14,23 @@
 			top: 0;
 			left: 0;
 		}
+
+		controls {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		.button {
+			width: 5%;
+			height: 10%;
+			background-color: rgba(255,255,255,0.05);
+			display: block;
+			position: absolute;
+		}
+
 		</style>
 	<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -31,6 +48,12 @@
 			LastScore:<lastscore></lastscore><br>
 			Highscore:<highscore></highscore>
 		</scoreboard>
+		<controls>
+			<div id="upbutton" class="button"></div>
+			<div id="downbutton" class="button"></div>
+			<div id="leftbutton" class="button"></div>
+			<div id="rightbutton" class="button"></div>
+		</controls>
 		<script type="text/javascript">
 
 		// Create the neccessay elements
@@ -107,7 +130,7 @@
 				ctx.beginPath();
 				ctx.arc(this.loc_x, this.loc_y, this.radius, 0, 2*pi, true);
 				ctx.closePath();
-				
+
 				ctx.fill();
 			}
 		}
@@ -136,7 +159,7 @@
 					this.loc_x = r_x;
 					this.loc_y = HEIGHT - 10;
 					break;
-				case 4: 
+				case 4:
 					this.loc_x = 10;
 					this.loc_y = r_y;
 			}
@@ -193,7 +216,7 @@
 					if(score > highscore){
 						localStorage.setItem("highscore", score);
 						highscore = localStorage.getItem("highscore");
-					} 
+					}
 
 					//Reset the score
 					l_score = score;
@@ -210,7 +233,7 @@
 				ctx.beginPath();
 				ctx.arc(this.loc_x, this.loc_y, this.radius, 0, 2*pi, true);
 				ctx.closePath();
-				
+
 				ctx.fill();
 			}
 		}
@@ -303,4 +326,3 @@
 		</script>
 	</body>
 </html>
-
