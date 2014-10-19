@@ -2,7 +2,7 @@
 	<head>
 		<title>BallRunner</title>
 		<style>
-		body {
+	body {
 			margin: 0;
 			background-color: black;
 			color: white;
@@ -14,6 +14,23 @@
 			top: 0;
 			left: 0;
 		}
+
+		controls {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		.button {
+			width: 5%;
+			height: 10%;
+			background-color: rgba(255,255,255,0.05);
+			display: block;
+			position: absolute;
+		}
+
 		</style>
 	<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -31,6 +48,12 @@
 			LastScore:<lastscore></lastscore><br>
 			Highscore:<highscore></highscore>
 		</scoreboard>
+		<controls>
+			<div id="upbutton" class="button"></div>
+			<div id="downbutton" class="button"></div>
+			<div id="leftbutton" class="button"></div>
+			<div id="rightbutton" class="button"></div>
+		</controls>
 		<script type="text/javascript">
 
 		// Create the neccessay elements
@@ -49,6 +72,58 @@
 		var lastscore = document.getElementsByTagName("lastscore")[0];
 		var h_score = document.getElementsByTagName("highscore")[0];
 		var lastScore = null;
+
+		// Check is the device mobile
+		function detectmob() {
+			if( navigator.userAgent.match(/Android/i)
+				|| navigator.userAgent.match(/webOS/i)
+				|| navigator.userAgent.match(/iPhone/i)
+				|| navigator.userAgent.match(/iPad/i)
+				|| navigator.userAgent.match(/iPod/i)
+				|| navigator.userAgent.match(/BlackBerry/i)
+				|| navigator.userAgent.match(/Windows Phone/i)
+			){
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		if(detectmob()){
+			var UpButton= "upbutton";
+			var DownButton= "downbutton";
+			var LeftButton= "leftbutton";
+			var RightButton="rightbutton";
+
+			// Set the location of the buttons;
+			var bs = WIDTH / 5;
+
+			var l_upbutton = document.getElementById('upbutton');
+				l_upbutton.style.width = bs+"px";
+				l_upbutton.style.height = bs+"px";
+				l_upbutton.style.bottom = (2*bs)+"px";
+				l_upbutton.style.left = ( (WIDTH - bs) / 2)+"px";
+
+			var l_leftbutton = document.getElementById('leftbutton');
+				l_leftbutton.style.width = bs+"px";
+				l_leftbutton.style.height = bs+"px";
+				l_leftbutton.style.bottom = (1*bs)+"px";
+				l_leftbutton.style.left = ( (WIDTH - bs) / 2 - bs)+"px";
+
+			var l_downbutton = document.getElementById('downbutton');
+				l_downbutton.style.width = bs+"px";
+				l_downbutton.style.height = bs+"px";
+				l_downbutton.style.bottom = (0*bs)+"px";
+				l_downbutton.style.left = ( (WIDTH - bs) / 2)+"px";
+
+			var l_rightbutton = document.getElementById('rightbutton');
+				l_rightbutton.style.width = bs+"px";
+				l_rightbutton.style.height = bs+"px";
+				l_rightbutton.style.bottom = (1*bs)+"px";
+				l_rightbutton.style.left = ( (WIDTH - bs) / 2 + bs)+"px";
+		} else {
+			document.getElementsByTagName("controls")[0].remove();
+		}
 
 		// Function to update the scoreboard
 		function update_scoreboard(){
@@ -96,6 +171,11 @@
 				if(keystate[LeftArrow]) this.loc_x -=this.speed;
 				if(keystate[RightArrow]) this.loc_x +=this.speed;
 
+				if(keystate[UpButton]) this.loc_y -=this.speed;
+				if(keystate[DownButton]) this.loc_y +=this.speed;
+				if(keystate[LeftButton]) this.loc_x -=this.speed;
+				if(keystate[RightButton]) this.loc_x +=this.speed;
+
 				// Set the limits for the player
 				this.loc_y = Math.max(Math.min(this.loc_y, HEIGHT - this.radius), this.radius);
 				this.loc_x = Math.max(Math.min(this.loc_x, WIDTH - this.radius), this.radius);
@@ -107,7 +187,7 @@
 				ctx.beginPath();
 				ctx.arc(this.loc_x, this.loc_y, this.radius, 0, 2*pi, true);
 				ctx.closePath();
-				
+
 				ctx.fill();
 			}
 		}
@@ -136,7 +216,7 @@
 					this.loc_x = r_x;
 					this.loc_y = HEIGHT - 10;
 					break;
-				case 4: 
+				case 4:
 					this.loc_x = 10;
 					this.loc_y = r_y;
 			}
@@ -193,7 +273,7 @@
 					if(score > highscore){
 						localStorage.setItem("highscore", score);
 						highscore = localStorage.getItem("highscore");
-					} 
+					}
 
 					//Reset the score
 					l_score = score;
@@ -210,7 +290,7 @@
 				ctx.beginPath();
 				ctx.arc(this.loc_x, this.loc_y, this.radius, 0, 2*pi, true);
 				ctx.closePath();
-				
+
 				ctx.fill();
 			}
 		}
@@ -303,4 +383,3 @@
 		</script>
 	</body>
 </html>
-
