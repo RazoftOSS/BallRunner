@@ -335,10 +335,13 @@
 
 			// Spawn a ball every second and add to the score
 			setInterval(function(){
-				balls.push(new ball);
-				score++;
-				console.log(score);
-				update_scoreboard();
+				if( document.hasFocus() ){
+					balls.push(new ball);
+					score++;
+					console.log(score);
+					update_scoreboard();
+				}
+
 			}, 1000);
 
 
