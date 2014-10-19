@@ -325,8 +325,10 @@
 
 			// GAME LOOP
 			var loop = function(){
-				update();
-				draw();
+				if( document.hasFocus() ){
+					update();
+					draw();
+				}
 
 				window.requestAnimationFrame(loop, canvas);
 			}
