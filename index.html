@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<title>BallRunner</title>
+		<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=0"/>
 		<style>
 	body {
 			margin: 0;
@@ -65,7 +66,7 @@
 		var LeftArrow=37;
 		var RightArrow=39;
 		var pi = Math.PI;
-		var score = -1;
+		var score = 0;
 		var l_score = "N/A";
 		var highscore = localStorage.getItem("highscore");
 		var thisscore = document.getElementsByTagName("score")[0];
@@ -325,10 +326,8 @@
 
 			// GAME LOOP
 			var loop = function(){
-				if( document.hasFocus() ){
-					update();
-					draw();
-				}
+				update();
+				draw();
 
 				window.requestAnimationFrame(loop, canvas);
 			}
@@ -346,13 +345,10 @@
 
 			// Spawn a ball every second and add to the score
 			setInterval(function(){
-				if( document.hasFocus() ){
-					balls.push(new ball);
-					score++;
-					console.log(score);
-					update_scoreboard();
-				}
-
+				balls.push(new ball);
+				score++;
+				console.log(score);
+				update_scoreboard();
 			}, 1000);
 
 
