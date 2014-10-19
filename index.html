@@ -73,6 +73,58 @@
 		var h_score = document.getElementsByTagName("highscore")[0];
 		var lastScore = null;
 
+		// Check is the device mobile
+		function detectmob() {
+			if( navigator.userAgent.match(/Android/i)
+				|| navigator.userAgent.match(/webOS/i)
+				|| navigator.userAgent.match(/iPhone/i)
+				|| navigator.userAgent.match(/iPad/i)
+				|| navigator.userAgent.match(/iPod/i)
+				|| navigator.userAgent.match(/BlackBerry/i)
+				|| navigator.userAgent.match(/Windows Phone/i)
+			){
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		if(detectmob()){
+			var UpButton= "upbutton";
+			var DownButton= "downbutton";
+			var LeftButton= "leftbutton";
+			var RightButton="rightbutton";
+
+			// Set the location of the buttons;
+			var bs = WIDTH / 5;
+
+			var l_upbutton = document.getElementById('upbutton');
+				l_upbutton.style.width = bs+"px";
+				l_upbutton.style.height = bs+"px";
+				l_upbutton.style.bottom = (2*bs)+"px";
+				l_upbutton.style.left = ( (WIDTH - bs) / 2)+"px";
+
+			var l_leftbutton = document.getElementById('leftbutton');
+				l_leftbutton.style.width = bs+"px";
+				l_leftbutton.style.height = bs+"px";
+				l_leftbutton.style.bottom = (1*bs)+"px";
+				l_leftbutton.style.left = ( (WIDTH - bs) / 2 - bs)+"px";
+
+			var l_downbutton = document.getElementById('downbutton');
+				l_downbutton.style.width = bs+"px";
+				l_downbutton.style.height = bs+"px";
+				l_downbutton.style.bottom = (0*bs)+"px";
+				l_downbutton.style.left = ( (WIDTH - bs) / 2)+"px";
+
+			var l_rightbutton = document.getElementById('rightbutton');
+				l_rightbutton.style.width = bs+"px";
+				l_rightbutton.style.height = bs+"px";
+				l_rightbutton.style.bottom = (1*bs)+"px";
+				l_rightbutton.style.left = ( (WIDTH - bs) / 2 + bs)+"px";
+		} else {
+			document.getElementsByTagName("controls")[0].remove();
+		}
+
 		// Function to update the scoreboard
 		function update_scoreboard(){
 			thisscore.innerHTML = score;
@@ -118,6 +170,11 @@
 				if(keystate[DownArrow]) this.loc_y +=this.speed;
 				if(keystate[LeftArrow]) this.loc_x -=this.speed;
 				if(keystate[RightArrow]) this.loc_x +=this.speed;
+
+				if(keystate[UpButton]) this.loc_y -=this.speed;
+				if(keystate[DownButton]) this.loc_y +=this.speed;
+				if(keystate[LeftButton]) this.loc_x -=this.speed;
+				if(keystate[RightButton]) this.loc_x +=this.speed;
 
 				// Set the limits for the player
 				this.loc_y = Math.max(Math.min(this.loc_y, HEIGHT - this.radius), this.radius);
@@ -252,6 +309,15 @@
 			// Listen for button being no longer pressed
 			document.addEventListener("keyup", function(e){
 				delete keystate[e.keyCode];
+			});
+
+			// Listen for buttons being touched
+			document.addEventListener("touchstart", function(e){
+				keystate[e.target.id] = true;
+			});
+
+			document.addEventListener("touchend", function(e){
+				delete keystate[e.target.id];
 			});
 
 			// Initialise the game
