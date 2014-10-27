@@ -9,6 +9,5 @@ If you wish to contribute, please make your own branch and then it would be merg
 
 
 ## Things to come ##
-* Main Menu
 * Custom Playmodes
 * Multiplayer
