@@ -19,7 +19,7 @@
 
 -->
 
-<!DOCUMENT html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>BallRunner</title>
@@ -31,10 +31,14 @@
         font-size: 2em;
         font-family: sans-serif;
         font-weight: 300;
+        overflow: hidden;
       }
 
       .content {
         margin: 10% auto;
+        position: absolute;
+        width: 100%;
+        z-index: 100;
       }
 
       .content span {
@@ -59,6 +63,13 @@
         padding: 10px 20px;
         margin: 20px auto;
       }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 99;
+      }
     </style>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -78,5 +89,15 @@
       <br>
       <span>&copy <a href="http://razoft.com">Razoft</a> 2014</span>
     </div>
+    <script type="text/javascript">
+    // The ball spawning script. Minified. To view "original" version please Beautify the script at http://jsbeautifier.org/
+      var canvas=document.createElement("canvas"),HEIGHT=window.innerHeight,WIDTH=window.innerWidth,pi=Math.PI,enemy_ball_speed=WIDTH/300,enemy_ball_radius=WIDTH/350,ctx=canvas.getContext("2d");
+      canvas.height=HEIGHT,canvas.width=WIDTH;var BallRunner=function(){document.body.appendChild(canvas);var a=new Ball,b=function(){ctx.fillRect(0,0,WIDTH,HEIGHT),
+      ctx.save(),a.update(),a.draw(),ctx.restore(),window.requestAnimationFrame(b,canvas)};window.requestAnimationFrame(b,canvas)},Ball=function(){
+      this.loc_x=20,this.loc_y=20,this.speed=enemy_ball_speed,this.radius=enemy_ball_radius;var a=Math.floor(Math.random()*(2*pi-.1+1))+.1;this.vel={x:this.speed*Math.sin(a),y:this.speed*Math.cos(a)},
+      this.update=function(){if(this.loc_x+=this.vel.x,this.loc_y+=this.vel.y,0>this.loc_x+this.radius||this.loc_x+this.radius>WIDTH){var a=this.vel.x<0?0-this.loc_x:WIDTH-(this.loc_x+this.radius);
+      this.loc_x+=a,this.vel.x*=-1}if(0>this.loc_y-this.radius||this.loc_y+this.radius>HEIGHT){var a=this.vel.y<0?0-this.loc_y:HEIGHT-(this.loc_y+this.radius);this.y+=a,this.vel.y*=-1}},
+      this.draw=function(){ctx.fillStyle="#f00",ctx.beginPath(),ctx.arc(this.loc_x,this.loc_y,this.radius,0,2*pi,!0),ctx.closePath(),ctx.fill()}};BallRunner();
+    </script>
   </body>
 </html>
