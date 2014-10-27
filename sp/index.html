@@ -102,6 +102,25 @@
 		var h_score = document.getElementsByTagName("highscore")[0];
 		var lastScore = null;
 
+		// Detect is the device vertical or horizontal
+		if(HEIGHT < WIDTH){
+
+			// Ball settings. Here to save on performance
+			var player_ball_radius = WIDTH / 180;
+			var enemy_ball_radius = WIDTH / 350;
+
+			var player_ball_speed = WIDTH / 160;
+			var enemy_ball_speed = WIDTH /300;
+		} else {
+			var player_ball_radius = HEIGHT / 180;
+			var enemy_ball_radius = HEIGHT / 350;
+
+			var player_ball_speed = HEIGHT / 160;
+			var enemy_ball_speed = HEIGHT /300;
+		}
+		
+		
+
 		// Check is the device mobile
 		function detectmob() {
 			if( navigator.userAgent.match(/Android/i)
@@ -119,6 +138,7 @@
 		}
 
 		if(detectmob()){
+			
 			var UpButton= "upbutton";
 			var DownButton= "downbutton";
 			var LeftButton= "leftbutton";
@@ -181,10 +201,10 @@
 			loc_y: null,
 
 			// Speed at which the player can travel
-			speed: 10,
+			speed: player_ball_speed,
 
 			//Radius of the player
-			radius: 10,
+			radius: player_ball_radius,
 
 			// Player's velocity
 			vel: {
@@ -194,7 +214,7 @@
 
 			// Update players location
 			update: function(){
-				// Orthogonal Movements
+				// Orthogonal Movements64
 				if(keystate[UpArrow] || keystate[numpad8]) this.loc_y -=this.speed;
 				if(keystate[DownArrow] || keystate[numpad2]) this.loc_y +=this.speed;
 				if(keystate[LeftArrow] || keystate[numpad4]) this.loc_x -=this.speed;
@@ -269,10 +289,10 @@
 			}
 
 			// Balls max speed
-			this.speed = 5;
+			this.speed = enemy_ball_speed;
 
 			// Balls radius
-			this.radius= 5;
+			this.radius= enemy_ball_radius;
 
 			// Create a  new random angle at which to spawn a ball
 			var angle = Math.floor(Math.random() * (2*pi - 0.1 + 1)) + 0.1;
