@@ -85,6 +85,14 @@
 		var DownArrow=40;
 		var LeftArrow=37;
 		var RightArrow=39;
+		var numpad1 = 97;
+		var numpad2 = 98;
+		var numpad3 = 99;
+		var numpad4 = 100;
+		var numpad6 = 102;
+		var numpad7 = 103;
+		var numpad8 = 104;
+		var numpad9 = 105;
 		var pi = Math.PI;
 		var score = -1;
 		var l_score = "N/A";
@@ -186,16 +194,34 @@
 
 			// Update players location
 			update: function(){
-				// Movements
-				if(keystate[UpArrow]) this.loc_y -=this.speed;
-				if(keystate[DownArrow]) this.loc_y +=this.speed;
-				if(keystate[LeftArrow]) this.loc_x -=this.speed;
-				if(keystate[RightArrow]) this.loc_x +=this.speed;
+				// Orthogonal Movements
+				if(keystate[UpArrow] || keystate[numpad8]) this.loc_y -=this.speed;
+				if(keystate[DownArrow] || keystate[numpad2]) this.loc_y +=this.speed;
+				if(keystate[LeftArrow] || keystate[numpad4]) this.loc_x -=this.speed;
+				if(keystate[RightArrow] || keystate[numpad6]) this.loc_x +=this.speed;
 
 				if(keystate[UpButton]) this.loc_y -=this.speed;
 				if(keystate[DownButton]) this.loc_y +=this.speed;
 				if(keystate[LeftButton]) this.loc_x -=this.speed;
 				if(keystate[RightButton]) this.loc_x +=this.speed;
+				
+				// Diagonal Movements
+				if(keystate[numpad1]) {
+					this.loc_y += this.speed;
+					this.loc_x -= this.speed;
+				}
+				if(keystate[numpad3]) {
+					this.loc_y += this.speed;
+					this.loc_x += this.speed;
+				}
+				if(keystate[numpad7]) {
+					this.loc_y -= this.speed;
+					this.loc_x -= this.speed;
+				}
+				if(keystate[numpad9]) {
+					this.loc_y -= this.speed;
+					this.loc_x += this.speed;
+				}
 
 				// Set the limits for the player
 				this.loc_y = Math.max(Math.min(this.loc_y, HEIGHT - this.radius), this.radius);
