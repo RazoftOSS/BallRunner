@@ -1,400 +1,103 @@
+<!--
+
+#########################################################
+#                                                       #
+#                     BallRunner                        #
+#               http://play.razoft.net                  #
+#                                                       #
+#     https://github.com/RazoftSource/BallRunner        #
+#                                                       #
+#                                                       #
+#               Copyright Razoft 2014                   #
+#                 http://razoft.com                     #
+#                                                       #
+#                                                       #
+#             Made by Wojciech Bednarzak                #
+#             http://wojtek.bednarzak.com               #
+#                                                       #
+#########################################################
+
+-->
+
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>BallRunner</title>
-		<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=0"/>
-		<style>
-	body {
-			margin: 0;
-			background-color: black;
-			color: white;
-			overflow: hidden;
-		}
-
-		scoreboard {
-			position: absolute;
-			top: 0;
-			left: 0;
-		}
-
-		controls {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-		}
-
-		.button {
-			width: 5%;
-			height: 10%;
-			background-color: rgba(255,255,255,0.05);
-			display: block;
-			position: absolute;
-		}
-
-		</style>
-	<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-			ga('create', 'UA-39777815-3', 'auto');
-			ga('send', 'pageview');
-		</script>
-	</head>
-	<body>
-		<scoreboard>
-			Score:<score></score><br>
-			LastScore:<lastscore></lastscore><br>
-			Highscore:<highscore></highscore>
-		</scoreboard>
-		<controls>
-			<div id="upbutton" class="button"></div>
-			<div id="downbutton" class="button"></div>
-			<div id="leftbutton" class="button"></div>
-			<div id="rightbutton" class="button"></div>
-		</controls>
-		<script type="text/javascript">
-
-		// Create the neccessay elements
-		var canvas = document.createElement("canvas");
-		var HEIGHT = window.innerHeight;
-		var WIDTH = window.innerWidth;
-		var UpArrow=38;
-		var DownArrow=40;
-		var LeftArrow=37;
-		var RightArrow=39;
-		var pi = Math.PI;
-		var score = -1;
-		var l_score = "N/A";
-		var highscore = localStorage.getItem("highscore");
-		var thisscore = document.getElementsByTagName("score")[0];
-		var lastscore = document.getElementsByTagName("lastscore")[0];
-		var h_score = document.getElementsByTagName("highscore")[0];
-		var lastScore = null;
-
-		// Check is the device mobile
-		function detectmob() {
-			if( navigator.userAgent.match(/Android/i)
-				|| navigator.userAgent.match(/webOS/i)
-				|| navigator.userAgent.match(/iPhone/i)
-				|| navigator.userAgent.match(/iPad/i)
-				|| navigator.userAgent.match(/iPod/i)
-				|| navigator.userAgent.match(/BlackBerry/i)
-				|| navigator.userAgent.match(/Windows Phone/i)
-			){
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		if(detectmob()){
-			var UpButton= "upbutton";
-			var DownButton= "downbutton";
-			var LeftButton= "leftbutton";
-			var RightButton="rightbutton";
-
-			// Set the location of the buttons;
-			var bs = WIDTH / 5;
-
-			var l_upbutton = document.getElementById('upbutton');
-				l_upbutton.style.width = bs+"px";
-				l_upbutton.style.height = bs+"px";
-				l_upbutton.style.bottom = (2*bs)+"px";
-				l_upbutton.style.left = ( (WIDTH - bs) / 2)+"px";
-
-			var l_leftbutton = document.getElementById('leftbutton');
-				l_leftbutton.style.width = bs+"px";
-				l_leftbutton.style.height = bs+"px";
-				l_leftbutton.style.bottom = (1*bs)+"px";
-				l_leftbutton.style.left = ( (WIDTH - bs) / 2 - bs)+"px";
-
-			var l_downbutton = document.getElementById('downbutton');
-				l_downbutton.style.width = bs+"px";
-				l_downbutton.style.height = bs+"px";
-				l_downbutton.style.bottom = (0*bs)+"px";
-				l_downbutton.style.left = ( (WIDTH - bs) / 2)+"px";
-
-			var l_rightbutton = document.getElementById('rightbutton');
-				l_rightbutton.style.width = bs+"px";
-				l_rightbutton.style.height = bs+"px";
-				l_rightbutton.style.bottom = (1*bs)+"px";
-				l_rightbutton.style.left = ( (WIDTH - bs) / 2 + bs)+"px";
-		} else {
-			document.getElementsByTagName("controls")[0].remove();
-		}
-
-		// Function to update the scoreboard
-		function update_scoreboard(){
-			thisscore.innerHTML = score;
-			lastscore.innerHTML = l_score;
-			h_score.innerHTML = highscore;
-		}
-
-		// Store the balls in an array
-		var balls = [];
-
-		// Tell the canvas we are working in 2D
-		var ctx = canvas.getContext("2d");
-
-		// Set the canvas height and width
-		canvas.height = HEIGHT;
-		canvas.width = WIDTH;
-
-		// Add canvas to the page
-		document.body.appendChild(canvas);
-
-		// Player object
-		var player = {
-			// Location of the player
-			loc_x: null,
-			loc_y: null,
-
-			// Speed at which the player can travel
-			speed: 10,
-
-			//Radius of the player
-			radius: 10,
-
-			// Player's velocity
-			vel: {
-				x: null,
-				y: null
-			},
-
-			// Update players location
-			update: function(){
-				// Movements
-				if(keystate[UpArrow]) this.loc_y -=this.speed;
-				if(keystate[DownArrow]) this.loc_y +=this.speed;
-				if(keystate[LeftArrow]) this.loc_x -=this.speed;
-				if(keystate[RightArrow]) this.loc_x +=this.speed;
-
-				if(keystate[UpButton]) this.loc_y -=this.speed;
-				if(keystate[DownButton]) this.loc_y +=this.speed;
-				if(keystate[LeftButton]) this.loc_x -=this.speed;
-				if(keystate[RightButton]) this.loc_x +=this.speed;
-
-				// Set the limits for the player
-				this.loc_y = Math.max(Math.min(this.loc_y, HEIGHT - this.radius), this.radius);
-				this.loc_x = Math.max(Math.min(this.loc_x, WIDTH - this.radius), this.radius);
-			},
-
-			// Draw the player on the screen
-			draw: function(){
-				ctx.fillStyle = "#0f0";
-				ctx.beginPath();
-				ctx.arc(this.loc_x, this.loc_y, this.radius, 0, 2*pi, true);
-				ctx.closePath();
-
-				ctx.fill();
-			}
-		}
-
-		// Ball Object
-		var ball = function(){
-
-			// Generate a random to pick the spawn wall
-			var r_s = Math.floor(Math.random() * (4)) + 1;
-
-			// Random ball location
-			var r_x = Math.floor(Math.random() * (WIDTH - 20 + 1)) + 10;
-			var r_y = Math.floor(Math.random() * (HEIGHT - 10 + 1)) + 10;
-
-			// Ball Location depending on the random side
-			switch(r_s){
-				case 1:
-					this.loc_x = r_x;
-					this.loc_y = 10;
-					break;
-				case 2:
-					this.loc_x = WIDTH - 10;
-					this.loc_y = r_y;
-					break;
-				case 3:
-					this.loc_x = r_x;
-					this.loc_y = HEIGHT - 10;
-					break;
-				case 4:
-					this.loc_x = 10;
-					this.loc_y = r_y;
-			}
-
-			// Balls max speed
-			this.speed = 5;
-
-			// Balls radius
-			this.radius= 5;
-
-			// Create a  new random angle at which to spawn a ball
-			var angle = Math.floor(Math.random() * (2*pi - 0.1 + 1)) + 0.1;
-
-			// Give the ball some velocity
-			this.vel = {
-				x: this.speed*(Math.sin(angle)),
-				y: this.speed*(Math.cos(angle))
-			};
-
-			// Update ball's location and handle collisions.
-			this.update = function(){
-
-				// Change the ball's location on each update
-				this.loc_x += this.vel.x;
-				this.loc_y += this.vel.y;
-
-				// Reflect the ball in from left and right side
-				if(0 > this.loc_x+this.radius || this.loc_x+this.radius > WIDTH){
-					// Create an offset
-					var offset = this.vel.x < 0 ? 0 - this.loc_x : WIDTH - (this.loc_x + this.radius);
-					this.loc_x += offset;
-
-					// Reverse the ball's direction in the x axis
-					this.vel.x *= -1;
-				}
-
-				// Reflect the ball in from top and bottom
-				if(0 > this.loc_y-this.radius || this.loc_y+this.radius > HEIGHT) {
-					// Create an offset
-					var offset = this.vel.y < 0 ? 0 - this.loc_y : HEIGHT - (this.loc_y+this.radius);
-					this.y += offset;
-
-					// Reverse the ball's direction in the y axis
-					this.vel.y *= -1;
-				}
-
-				// Check did the ball collide with the player, do if yes
-				if( (this.radius+player.radius) > Math.sqrt(Math.pow(this.loc_x-player.loc_x,2)+Math.pow(this.loc_y-player.loc_y,2)) ){
-
-					// Clear all balls
-					balls.length = 0;
-
-					// If the new score is higher than the highscore, update the highscore
-					if(score > highscore){
-						localStorage.setItem("highscore", score);
-						highscore = localStorage.getItem("highscore");
-					}
-
-					//Reset the score
-					l_score = score;
-					score = 0;
-				}
-			}
-
-			// Main draw function for ball
-			this.draw = function(){
-				// Change the ball colour to red
-				ctx.fillStyle = "#f00";
-
-				// Draw a sphere
-				ctx.beginPath();
-				ctx.arc(this.loc_x, this.loc_y, this.radius, 0, 2*pi, true);
-				ctx.closePath();
-
-				ctx.fill();
-			}
-		}
-
-		// Main function that starts the game
-		function BallRunner(){
-
-			// Create the keystate object
-			keystate = {};
-
-			// Listen for buttons being pressed down
-			document.addEventListener("keydown", function(e){
-				keystate[e.keyCode] = true;
-			});
-
-			// Listen for button being no longer pressed
-			document.addEventListener("keyup", function(e){
-				delete keystate[e.keyCode];
-			});
-
-			// Listen for buttons being touched
-			document.addEventListener("touchstart", function(e){
-				keystate[e.target.id] = true;
-			});
-
-			document.addEventListener("touchend", function(e){
-				delete keystate[e.target.id];
-			});
-
-			// Initialise the game
-			init();
-
-			// GAME LOOP
-			var loop = function(){
-				if( document.hasFocus() ){
-					update();
-					draw();
-				}
-
-				window.requestAnimationFrame(loop, canvas);
-			}
-
-			// Start game loop
-			window.requestAnimationFrame(loop, canvas);
-		}
-
-		// Main initialisation function used to start the game
-		function init(){
-
-			// Center the player's location
-			player.loc_x = WIDTH/2;
-			player.loc_y = HEIGHT/2;
-
-			// Spawn a ball every second and add to the score
-			setInterval(function(){
-				if( document.hasFocus() ){
-					balls.push(new ball);
-					score++;
-					console.log(score);
-					update_scoreboard();
-				}
-
-			}, 1000);
-
-
-		}
-
-		// Main update function
-		function update(){
-			player.update();
-
-			// Do an update for each individual ball
-			for(i=0;i<(balls.length - 1);i++){
-				balls[i].update();
-			}
-		}
-
-		// Main draw function
-		function draw(){
-
-			// Change the playing area to black
-			ctx.fillRect(0,0,WIDTH,HEIGHT);
-
-			// Save current state of the canvas
-			ctx.save();
-
-			// Render the player
-			player.draw();
-
-			// Render each ball
-			for(i=0;i<(balls.length - 1);i++){
-				balls[i].draw();
-			}
-
-			// Restore the canvas
-			ctx.restore();
-		}
-
-		// Call the main function to start the game
-		BallRunner();
-
-
-		// -- END OF SCRIPT -- //
-		</script>
-	</body>
+  <head>
+    <title>BallRunner</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+        text-align: center;
+        font-size: 2em;
+        font-family: sans-serif;
+        font-weight: 300;
+        overflow: hidden;
+      }
+
+      .content {
+        margin: 10% auto;
+        position: absolute;
+        width: 100%;
+        z-index: 100;
+      }
+
+      .content span {
+        display: block;
+        font-size: 0.7em;
+        margin-top: 50px;
+        opacity: 0.5;
+      }
+
+      .content span a{
+        text-decoration: underline;
+        border: 0;
+        padding: 0;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+        border-radius: 5px;
+        border: 1px solid white;
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 20px auto;
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 99;
+      }
+    </style>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-39777815-3', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="content">
+      <h1>BallRunner</h1>
+      <a href="sp/">Single Player</a>
+      <a href="mp/">Multi Player</a>
+      <br>
+      <span>&copy <a href="http://razoft.com">Razoft</a> 2014</span>
+    </div>
+    <script type="text/javascript">
+    // The ball spawning script. Minified. To view "original" version please Beautify the script at http://jsbeautifier.org/
+      var canvas=document.createElement("canvas"),HEIGHT=window.innerHeight,WIDTH=window.innerWidth,pi=Math.PI,enemy_ball_speed=WIDTH/300,enemy_ball_radius=WIDTH/350,ctx=canvas.getContext("2d");
+      canvas.height=HEIGHT,canvas.width=WIDTH;var BallRunner=function(){document.body.appendChild(canvas);var a=new Ball,b=function(){ctx.fillRect(0,0,WIDTH,HEIGHT),
+      ctx.save(),a.update(),a.draw(),ctx.restore(),window.requestAnimationFrame(b,canvas)};window.requestAnimationFrame(b,canvas)},Ball=function(){
+      this.loc_x=20,this.loc_y=20,this.speed=enemy_ball_speed,this.radius=enemy_ball_radius;var a=Math.floor(Math.random()*(2*pi-.1+1))+.1;this.vel={x:this.speed*Math.sin(a),y:this.speed*Math.cos(a)},
+      this.update=function(){if(this.loc_x+=this.vel.x,this.loc_y+=this.vel.y,0>this.loc_x+this.radius||this.loc_x+this.radius>WIDTH){var a=this.vel.x<0?0-this.loc_x:WIDTH-(this.loc_x+this.radius);
+      this.loc_x+=a,this.vel.x*=-1}if(0>this.loc_y-this.radius||this.loc_y+this.radius>HEIGHT){var a=this.vel.y<0?0-this.loc_y:HEIGHT-(this.loc_y+this.radius);this.y+=a,this.vel.y*=-1}},
+      this.draw=function(){ctx.fillStyle="#f00",ctx.beginPath(),ctx.arc(this.loc_x,this.loc_y,this.radius,0,2*pi,!0),ctx.closePath(),ctx.fill()}};BallRunner();
+    </script>
+  </body>
 </html>
